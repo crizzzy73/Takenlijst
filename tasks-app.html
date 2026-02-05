@@ -645,6 +645,10 @@
                 font-size: 24px;
             }
 
+            #search-input {
+                max-width: 100% !important;
+            }
+
             .tasks-container {
                 padding: 20px;
             }
@@ -975,6 +979,8 @@
                     snapshot.forEach((doc) => {
                         data.projects.push({ id: doc.id, ...doc.data() });
                     });
+                    console.log('Projects updated:', data.projects);
+                    renderProjects();
                     render();
                 });
 
@@ -1572,6 +1578,7 @@
             renderTasks();
             updateCounts();
             updateViewHeader();
+            console.log('Rendered. Projects:', data.projects.length, 'Tasks:', data.tasks.length);
         }
 
         function renderProjects() {
@@ -1579,20 +1586,26 @@
             const projectSelect = document.getElementById('task-project');
             
             // Render sidebar projects
-            projectsList.innerHTML = data.projects.map(project => `
-                <div class="nav-item ${data.currentView === 'project' && data.currentProject === project.id ? 'active' : ''}" 
-                     onclick="switchView('project', '${project.id}')">
-                    <div class="nav-item-label">
-                        <span class="nav-item-icon">📁</span>
-                        <span>${project.name}</span>
+            if (data.projects.length === 0) {
+                projectsList.innerHTML = '';
+            } else {
+                projectsList.innerHTML = data.projects.map(project => `
+                    <div class="nav-item ${data.currentView === 'project' && data.currentProject === project.id ? 'active' : ''}" 
+                         onclick="switchView('project', '${project.id}')">
+                        <div class="nav-item-label">
+                            <span class="nav-item-icon">📁</span>
+                            <span>${project.name}</span>
+                        </div>
+                        <span class="nav-item-count">${data.tasks.filter(t => t.project == project.id && !t.completed).length}</span>
                     </div>
-                    <span class="nav-item-count">${data.tasks.filter(t => t.project == project.id && !t.completed).length}</span>
-                </div>
-            `).join('');
+                `).join('');
+            }
 
             // Update project selector
-            projectSelect.innerHTML = '<option value="">Inbox</option>' + 
-                data.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            if (projectSelect) {
+                projectSelect.innerHTML = '<option value="">Inbox</option>' + 
+                    data.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            }
         }
 
         function renderTasks() {
