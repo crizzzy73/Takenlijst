@@ -637,8 +637,14 @@
                 box-shadow: 2px 0 10px rgba(0,0,0,0.1);
             }
 
+            .main-content {
+                height: 100vh;
+                overflow: hidden;
+            }
+
             .content-header {
                 padding: 80px 20px 20px;
+                flex-shrink: 0;
             }
 
             .content-header h2 {
@@ -651,6 +657,9 @@
 
             .tasks-container {
                 padding: 20px;
+                flex: 1;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
             }
 
             .task-input-container {
