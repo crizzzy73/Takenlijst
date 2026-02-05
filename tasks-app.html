@@ -918,6 +918,18 @@
             <div class="modal-header" id="task-detail-title">Taak Details</div>
             
             <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Project</label>
+                <select id="task-detail-project" class="modal-input" style="margin-bottom: 0;">
+                    <option value="">Inbox</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Deadline</label>
+                <input type="date" id="task-detail-date" class="modal-input" style="margin-bottom: 0;">
+            </div>
+
+            <div style="margin-bottom: 16px;">
                 <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Prioriteit</label>
                 <select id="task-detail-priority" class="modal-input" style="margin-bottom: 0;">
                     <option value="">Geen prioriteit</option>
@@ -1377,7 +1389,20 @@ Current Project: ${data.currentProject || 'none'}
             currentEditingTask = taskId;
             
             document.getElementById('task-detail-title').textContent = task.title;
+            
+            // Populate project selector
+            const projectSelect = document.getElementById('task-detail-project');
+            projectSelect.innerHTML = '<option value="">Inbox</option>' + 
+                data.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            projectSelect.value = task.project || '';
+            
+            // Populate date
+            document.getElementById('task-detail-date').value = task.date || '';
+            
+            // Populate priority
             document.getElementById('task-detail-priority').value = task.priority || '';
+            
+            // Populate notes
             document.getElementById('task-notes').value = task.notes || '';
             
             renderAttachments(task.attachments || []);
@@ -1398,6 +1423,8 @@ Current Project: ${data.currentProject || 'none'}
         async function saveTaskDetails() {
             if (!currentEditingTask || !db) return;
 
+            const project = document.getElementById('task-detail-project').value;
+            const date = document.getElementById('task-detail-date').value;
             const priority = document.getElementById('task-detail-priority').value;
             const notes = document.getElementById('task-notes').value;
             const task = data.tasks.find(t => t.id === currentEditingTask);
@@ -1405,24 +1432,25 @@ Current Project: ${data.currentProject || 'none'}
             try {
                 updateSyncStatus('syncing', 'Synchroniseren...');
                 
-                // Calculate new date based on subtasks
-                let newDate = task.date || '';
+                // Calculate new date based on subtasks if subtasks have later dates
+                let finalDate = date;
                 if (task.subtasks && task.subtasks.length > 0) {
                     const subtaskDates = task.subtasks
                         .map(st => st.date)
                         .filter(d => d)
                         .sort()
                         .reverse();
-                    if (subtaskDates.length > 0) {
-                        newDate = subtaskDates[0]; // Latest date
+                    if (subtaskDates.length > 0 && subtaskDates[0] > finalDate) {
+                        finalDate = subtaskDates[0]; // Use latest subtask date if it's later
                     }
                 }
                 
                 await db.collection('users').doc(userId).collection('tasks').doc(currentEditingTask)
                     .update({ 
+                        project: project,
+                        date: finalDate,
                         priority: priority,
-                        notes: notes,
-                        date: newDate
+                        notes: notes
                     });
                 
                 closeTaskDetailModal();
