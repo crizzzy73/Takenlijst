@@ -15,7 +15,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #f5f5f7;
+            background: #f0f9ff;
             color: #1d1d1f;
             height: 100vh;
             overflow: hidden;
@@ -29,26 +29,28 @@
         /* Sidebar */
         .sidebar {
             width: 280px;
-            background: #fff;
-            border-right: 1px solid #e5e5e7;
+            background: linear-gradient(135deg, #2e3192 0%, #1bffff 100%);
+            border-right: none;
             display: flex;
             flex-direction: column;
+            box-shadow: 2px 0 20px rgba(46, 49, 146, 0.15);
         }
 
         .sidebar-header {
             padding: 20px;
-            border-bottom: 1px solid #e5e5e7;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .sidebar-header h1 {
             font-size: 24px;
             font-weight: 600;
             margin-bottom: 8px;
+            color: white;
         }
 
         .sync-status {
             font-size: 12px;
-            color: #86868b;
+            color: rgba(255, 255, 255, 0.9);
             display: flex;
             align-items: center;
             gap: 6px;
@@ -87,7 +89,7 @@
             font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
-            color: #86868b;
+            color: rgba(255, 255, 255, 0.7);
             margin-bottom: 8px;
             padding: 0 12px;
         }
@@ -101,15 +103,17 @@
             justify-content: space-between;
             margin-bottom: 4px;
             transition: background 0.2s;
+            color: white;
         }
 
         .nav-item:hover {
-            background: #f5f5f7;
+            background: rgba(255, 255, 255, 0.15);
         }
 
         .nav-item.active {
-            background: #007aff;
+            background: rgba(255, 255, 255, 0.25);
             color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .nav-item-label {
@@ -124,29 +128,29 @@
 
         .nav-item-count {
             font-size: 13px;
-            color: #86868b;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .nav-item.active .nav-item-count {
-            color: rgba(255,255,255,0.7);
+            color: white;
         }
 
         .add-project-btn {
             padding: 8px 12px;
-            background: transparent;
-            border: 1px dashed #c7c7cc;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px dashed rgba(255, 255, 255, 0.3);
             border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
-            color: #007aff;
+            color: white;
             width: 100%;
             margin-top: 8px;
             transition: all 0.2s;
         }
 
         .add-project-btn:hover {
-            background: #f5f5f7;
-            border-color: #007aff;
+            background: rgba(255, 255, 255, 0.25);
+            border-color: white;
         }
 
         /* Main Content */
@@ -199,18 +203,19 @@
         .content-header {
             padding: 30px 40px 20px;
             background: white;
-            border-bottom: 1px solid #e5e5e7;
+            border-bottom: 1px solid #e0f2fe;
         }
 
         .content-header h2 {
             font-size: 28px;
             font-weight: 600;
             margin-bottom: 8px;
+            color: #2e3192;
         }
 
         .content-header .subtitle {
             font-size: 14px;
-            color: #86868b;
+            color: #64748b;
         }
 
         .tasks-container {
@@ -224,7 +229,8 @@
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(46, 49, 146, 0.08);
+            border: 1px solid #e0f2fe;
         }
 
         .task-input {
@@ -233,10 +239,11 @@
             outline: none;
             font-size: 15px;
             padding: 8px 0;
+            color: #1d1d1f;
         }
 
         .task-input::placeholder {
-            color: #c7c7cc;
+            color: #94a3b8;
         }
 
         .task-meta {
@@ -248,7 +255,7 @@
 
         .task-meta select, .task-meta input {
             padding: 6px 12px;
-            border: 1px solid #e5e5e7;
+            border: 1px solid #e0f2fe;
             border-radius: 6px;
             font-size: 13px;
             background: white;
@@ -257,7 +264,7 @@
 
         .add-task-btn {
             padding: 8px 16px;
-            background: #007aff;
+            background: linear-gradient(135deg, #2e3192 0%, #1bffff 100%);
             color: white;
             border: none;
             border-radius: 6px;
@@ -265,22 +272,25 @@
             font-size: 13px;
             font-weight: 500;
             margin-left: auto;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .add-task-btn:hover {
-            background: #0051d5;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(46, 49, 146, 0.3);
         }
 
         .task-list {
             background: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(46, 49, 146, 0.08);
+            border: 1px solid #e0f2fe;
         }
 
         .task-item {
             padding: 16px;
-            border-bottom: 1px solid #f5f5f7;
+            border-bottom: 1px solid #f0f9ff;
             display: flex;
             align-items: flex-start;
             gap: 12px;
@@ -292,13 +302,13 @@
         }
 
         .task-item:hover {
-            background: #fafafa;
+            background: #f8fafc;
         }
 
         .task-checkbox {
             width: 20px;
             height: 20px;
-            border: 2px solid #c7c7cc;
+            border: 2px solid #94a3b8;
             border-radius: 50%;
             cursor: pointer;
             flex-shrink: 0;
@@ -307,12 +317,12 @@
         }
 
         .task-checkbox:hover {
-            border-color: #007aff;
+            border-color: #2e3192;
         }
 
         .task-checkbox.completed {
-            background: #007aff;
-            border-color: #007aff;
+            background: linear-gradient(135deg, #2e3192 0%, #1bffff 100%);
+            border-color: #2e3192;
             position: relative;
         }
 
@@ -497,13 +507,19 @@
         }
 
         .modal-btn.primary {
-            background: #007aff;
+            background: linear-gradient(135deg, #2e3192 0%, #1bffff 100%);
             color: white;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .modal-btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(46, 49, 146, 0.3);
         }
 
         .modal-btn.secondary {
-            background: #f5f5f7;
-            color: #1d1d1f;
+            background: #f0f9ff;
+            color: #2e3192;
         }
 
         .config-notice {
@@ -616,7 +632,7 @@
         }
 
         .task-item.has-details:hover .task-title {
-            color: #007aff;
+            color: #2e3192;
         }
 
         @media (max-width: 768px) {
@@ -723,6 +739,13 @@
                             <span>Binnenkort</span>
                         </div>
                         <span class="nav-item-count" id="upcoming-count">0</span>
+                    </div>
+                    <div class="nav-item" onclick="switchView('archive')">
+                        <div class="nav-item-label">
+                            <span class="nav-item-icon">📦</span>
+                            <span>Archief</span>
+                        </div>
+                        <span class="nav-item-count" id="archive-count">0</span>
                     </div>
                 </div>
 
@@ -1086,6 +1109,7 @@
             const task = {
                 title: title,
                 completed: false,
+                archived: false,
                 project: document.getElementById('task-project').value,
                 priority: document.getElementById('task-priority').value,
                 date: document.getElementById('task-date').value,
@@ -1131,8 +1155,32 @@
             if (task) {
                 try {
                     updateSyncStatus('syncing', 'Synchroniseren...');
-                    await db.collection('users').doc(userId).collection('tasks').doc(id)
-                        .update({ completed: !task.completed });
+                    const newCompleted = !task.completed;
+                    
+                    // If marking as complete, archive after a delay
+                    if (newCompleted) {
+                        await db.collection('users').doc(userId).collection('tasks').doc(id)
+                            .update({ completed: true });
+                        
+                        // Archive after 1 second
+                        setTimeout(async () => {
+                            const currentTask = data.tasks.find(t => t.id === id);
+                            if (currentTask && currentTask.completed) {
+                                await db.collection('users').doc(userId).collection('tasks').doc(id)
+                                    .update({ 
+                                        archived: true,
+                                        archivedAt: firebase.firestore.FieldValue.serverTimestamp()
+                                    });
+                            }
+                        }, 1000);
+                    } else {
+                        // If uncompleting, also unarchive
+                        await db.collection('users').doc(userId).collection('tasks').doc(id)
+                            .update({ 
+                                completed: false,
+                                archived: false 
+                            });
+                    }
                 } catch (error) {
                     console.error('Error toggling task:', error);
                     updateSyncStatus('error', 'Fout bij bijwerken');
@@ -1625,19 +1673,22 @@ Current Project: ${data.currentProject || 'none'}
             
             switch (data.currentView) {
                 case 'inbox':
-                    filtered = data.tasks.filter(t => !t.project);
+                    filtered = data.tasks.filter(t => !t.project && !t.archived);
                     break;
                 case 'today':
-                    filtered = data.tasks.filter(t => t.date === today);
+                    filtered = data.tasks.filter(t => t.date === today && !t.archived);
                     break;
                 case 'upcoming':
-                    filtered = data.tasks.filter(t => t.date && t.date > today && t.date <= weekFromNow);
+                    filtered = data.tasks.filter(t => t.date && t.date > today && t.date <= weekFromNow && !t.archived);
+                    break;
+                case 'archive':
+                    filtered = data.tasks.filter(t => t.archived);
                     break;
                 case 'project':
-                    filtered = data.tasks.filter(t => t.project == data.currentProject);
+                    filtered = data.tasks.filter(t => t.project == data.currentProject && !t.archived);
                     break;
                 default:
-                    filtered = data.tasks;
+                    filtered = data.tasks.filter(t => !t.archived);
             }
 
             // Apply search filter
@@ -1724,39 +1775,80 @@ Current Project: ${data.currentProject || 'none'}
                 return;
             }
 
-            tasksList.innerHTML = `
-                <div class="task-list">
-                    ${tasks.map(task => {
-                        const project = data.projects.find(p => p.id == task.project);
-                        const hasDetails = (task.notes && task.notes.trim()) || (task.subtasks && task.subtasks.length > 0) || (task.attachments && task.attachments.length > 0);
-                        const taskTags = (task.tags || []).map(tagId => {
-                            const tag = data.tags.find(t => t.id === tagId);
-                            return tag ? tag.name : null;
-                        }).filter(t => t);
-                        
-                        return `
-                            <div class="task-item ${hasDetails ? 'has-details' : ''}" onclick="event.target.classList.contains('task-checkbox') || event.target.classList.contains('task-delete') ? null : showTaskDetailModal('${task.id}')">
-                                <div class="task-checkbox ${task.completed ? 'completed' : ''}" 
-                                     onclick="event.stopPropagation(); toggleTask('${task.id}')"></div>
-                                <div class="task-content">
-                                    <div class="task-title ${task.completed ? 'completed' : ''}">
-                                        ${task.title}
-                                        ${task.priority ? `<span class="priority-badge priority-${task.priority}" style="margin-left: 8px;">${task.priority.toUpperCase()}</span>` : ''}
-                                    </div>
-                                    <div class="task-details">
-                                        ${project ? `<span>📁 ${project.name}</span>` : ''}
-                                        ${task.date ? `<span>📅 ${formatDate(task.date)}</span>` : ''}
-                                        ${taskTags.map(tag => `<span class="task-tag">${tag}</span>`).join('')}
-                                        ${task.subtasks && task.subtasks.length > 0 ? `<span>📋 ${task.subtasks.filter(st => st.completed).length}/${task.subtasks.length}</span>` : ''}
-                                        ${task.attachments && task.attachments.length > 0 ? `<span>🔗 ${task.attachments.length}</span>` : ''}
-                                    </div>
-                                </div>
-                                <div class="task-delete" onclick="event.stopPropagation(); deleteTask('${task.id}')">×</div>
+            // If in archive view, group by project
+            if (data.currentView === 'archive') {
+                const grouped = {};
+                const noProject = [];
+                
+                tasks.forEach(task => {
+                    if (task.project) {
+                        if (!grouped[task.project]) {
+                            grouped[task.project] = [];
+                        }
+                        grouped[task.project].push(task);
+                    } else {
+                        noProject.push(task);
+                    }
+                });
+
+                let html = '';
+                
+                // Render tasks without project
+                if (noProject.length > 0) {
+                    html += `<div style="margin-bottom: 24px;">
+                        <h3 style="font-size: 14px; font-weight: 600; color: #86868b; margin-bottom: 12px; padding: 0 16px;">INBOX</h3>
+                        <div class="task-list">${renderTaskItems(noProject)}</div>
+                    </div>`;
+                }
+
+                // Render tasks grouped by project
+                Object.keys(grouped).forEach(projectId => {
+                    const project = data.projects.find(p => p.id === projectId);
+                    const projectName = project ? project.name : 'Onbekend Project';
+                    
+                    html += `<div style="margin-bottom: 24px;">
+                        <h3 style="font-size: 14px; font-weight: 600; color: #86868b; margin-bottom: 12px; padding: 0 16px;">📁 ${projectName.toUpperCase()}</h3>
+                        <div class="task-list">${renderTaskItems(grouped[projectId])}</div>
+                    </div>`;
+                });
+
+                tasksList.innerHTML = html;
+            } else {
+                tasksList.innerHTML = `<div class="task-list">${renderTaskItems(tasks)}</div>`;
+            }
+        }
+
+        function renderTaskItems(tasks) {
+            return tasks.map(task => {
+                const project = data.projects.find(p => p.id == task.project);
+                const hasDetails = (task.notes && task.notes.trim()) || (task.subtasks && task.subtasks.length > 0) || (task.attachments && task.attachments.length > 0);
+                const taskTags = (task.tags || []).map(tagId => {
+                    const tag = data.tags.find(t => t.id === tagId);
+                    return tag ? tag.name : null;
+                }).filter(t => t);
+                
+                return `
+                    <div class="task-item ${hasDetails ? 'has-details' : ''}" onclick="event.target.classList.contains('task-checkbox') || event.target.classList.contains('task-delete') ? null : showTaskDetailModal('${task.id}')">
+                        <div class="task-checkbox ${task.completed ? 'completed' : ''}" 
+                             onclick="event.stopPropagation(); toggleTask('${task.id}')"></div>
+                        <div class="task-content">
+                            <div class="task-title ${task.completed ? 'completed' : ''}">
+                                ${task.title}
+                                ${task.priority ? `<span class="priority-badge priority-${task.priority}" style="margin-left: 8px;">${task.priority.toUpperCase()}</span>` : ''}
                             </div>
-                        `;
-                    }).join('')}
-                </div>
-            `;
+                            <div class="task-details">
+                                ${project && data.currentView !== 'archive' ? `<span>📁 ${project.name}</span>` : ''}
+                                ${task.date ? `<span>📅 ${formatDate(task.date)}</span>` : ''}
+                                ${taskTags.map(tag => `<span class="task-tag">${tag}</span>`).join('')}
+                                ${task.subtasks && task.subtasks.length > 0 ? `<span>📋 ${task.subtasks.filter(st => st.completed).length}/${task.subtasks.length}</span>` : ''}
+                                ${task.attachments && task.attachments.length > 0 ? `<span>🔗 ${task.attachments.length}</span>` : ''}
+                                ${task.archived ? `<span style="color: #86868b;">📦 Gearchiveerd</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="task-delete" onclick="event.stopPropagation(); deleteTask('${task.id}')">×</div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function updateCounts() {
@@ -1764,11 +1856,13 @@ Current Project: ${data.currentProject || 'none'}
             const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
             document.getElementById('inbox-count').textContent = 
-                data.tasks.filter(t => !t.project && !t.completed).length;
+                data.tasks.filter(t => !t.project && !t.completed && !t.archived).length;
             document.getElementById('today-count').textContent = 
-                data.tasks.filter(t => t.date === today && !t.completed).length;
+                data.tasks.filter(t => t.date === today && !t.completed && !t.archived).length;
             document.getElementById('upcoming-count').textContent = 
-                data.tasks.filter(t => t.date && t.date > today && t.date <= weekFromNow && !t.completed).length;
+                data.tasks.filter(t => t.date && t.date > today && t.date <= weekFromNow && !t.completed && !t.archived).length;
+            document.getElementById('archive-count').textContent = 
+                data.tasks.filter(t => t.archived).length;
         }
 
         function updateViewHeader() {
@@ -1791,6 +1885,10 @@ Current Project: ${data.currentProject || 'none'}
                 case 'upcoming':
                     titleEl.textContent = 'Binnenkort';
                     subtitleEl.textContent = 'Komende 7 dagen';
+                    break;
+                case 'archive':
+                    titleEl.textContent = 'Archief';
+                    subtitleEl.textContent = 'Afgeronde taken';
                     break;
                 case 'project':
                     const project = data.projects.find(p => p.id === data.currentProject);
