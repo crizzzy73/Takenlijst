@@ -822,6 +822,22 @@
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">Instellingen</div>
             
+            <div style="margin-bottom: 24px; padding: 12px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px;">
+                <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">📱 Synchronisatie tussen devices</h3>
+                <p style="font-size: 12px; margin-bottom: 8px; line-height: 1.5;">Kopieer je User ID van je hoofdapparaat en plak het hier op andere apparaten om dezelfde data te zien.</p>
+                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                    <input type="text" id="user-id-display" readonly class="modal-input" style="margin-bottom: 0; flex: 1; font-family: monospace; font-size: 11px;" value="">
+                    <button class="modal-btn primary" onclick="copyUserId()" style="padding: 10px 16px;">Kopieer</button>
+                </div>
+                <details style="margin-top: 8px;">
+                    <summary style="cursor: pointer; font-size: 12px; font-weight: 600; color: #007aff;">Andere User ID gebruiken</summary>
+                    <div style="margin-top: 8px; display: flex; gap: 8px;">
+                        <input type="text" id="new-user-id-input" placeholder="Plak User ID van ander apparaat..." class="modal-input" style="margin-bottom: 0; flex: 1; font-family: monospace; font-size: 11px;">
+                        <button class="modal-btn primary" onclick="switchUserId()" style="padding: 10px 16px;">Wisselen</button>
+                    </div>
+                </details>
+            </div>
+
             <div style="margin-bottom: 24px;">
                 <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">Tags Beheren</h3>
                 <div id="tags-list" style="margin-bottom: 12px;"></div>
@@ -1131,6 +1147,7 @@
         // Settings Modal
         function showSettingsModal() {
             document.getElementById('settings-modal').classList.add('active');
+            document.getElementById('user-id-display').value = userId;
             renderTagsList();
         }
 
@@ -1151,6 +1168,57 @@ Current View: ${data.currentView}
 Current Project: ${data.currentProject || 'none'}
             `;
             alert(info);
+        }
+
+        function copyUserId() {
+            const input = document.getElementById('user-id-display');
+            input.select();
+            input.setSelectionRange(0, 99999); // For mobile
+            
+            try {
+                document.execCommand('copy');
+                alert('User ID gekopieerd! Plak dit op je andere apparaten.');
+            } catch (err) {
+                // Fallback for iOS
+                if (navigator.share) {
+                    navigator.share({
+                        text: userId
+                    }).catch(() => {
+                        alert('User ID: ' + userId + '\n\nKopieer dit handmatig.');
+                    });
+                } else {
+                    alert('User ID: ' + userId + '\n\nKopieer dit handmatig.');
+                }
+            }
+        }
+
+        function switchUserId() {
+            const newUserId = document.getElementById('new-user-id-input').value.trim();
+            
+            if (!newUserId) {
+                alert('Voer een User ID in');
+                return;
+            }
+
+            if (!newUserId.startsWith('user_')) {
+                alert('Ongeldige User ID. Het moet beginnen met "user_"');
+                return;
+            }
+
+            if (confirm('Weet je zeker dat je wilt wisselen naar deze User ID?\n\nDe huidige data op dit apparaat blijft in Firebase, maar je ziet nu de data van het andere apparaat.')) {
+                // Save new User ID
+                localStorage.setItem('userId', newUserId);
+                userId = newUserId;
+                
+                // Restart sync
+                if (unsubscribe) {
+                    unsubscribe();
+                }
+                setupRealtimeSync();
+                
+                closeSettingsModal();
+                alert('User ID gewisseld! De app laadt nu de data van je andere apparaat.');
+            }
         }
 
         function closeSettingsModal() {
