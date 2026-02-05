@@ -730,6 +730,12 @@
                             <span>Instellingen</span>
                         </div>
                     </div>
+                    <div class="nav-item" onclick="showDebugInfo()">
+                        <div class="nav-item-label">
+                            <span class="nav-item-icon">🐛</span>
+                            <span>Debug Info</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1126,6 +1132,25 @@
         function showSettingsModal() {
             document.getElementById('settings-modal').classList.add('active');
             renderTagsList();
+        }
+
+        function showDebugInfo() {
+            const info = `
+📊 DEBUG INFO:
+
+Projecten: ${data.projects.length}
+${data.projects.map(p => `  - ${p.name} (${p.id})`).join('\n')}
+
+Taken: ${data.tasks.length}
+Tags: ${data.tags.length}
+
+Firebase verbonden: ${db ? 'Ja' : 'Nee'}
+User ID: ${userId}
+
+Current View: ${data.currentView}
+Current Project: ${data.currentProject || 'none'}
+            `;
+            alert(info);
         }
 
         function closeSettingsModal() {
