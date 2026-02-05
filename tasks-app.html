@@ -157,6 +157,45 @@
             overflow: hidden;
         }
 
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 44px;
+            height: 44px;
+            background: white;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            cursor: pointer;
+            z-index: 200;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .mobile-menu-btn span {
+            width: 20px;
+            height: 2px;
+            background: #1d1d1f;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        .mobile-menu-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .mobile-menu-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
         .content-header {
             padding: 30px 40px 20px;
             background: white;
@@ -316,6 +355,66 @@
             font-size: 12px;
         }
 
+        .priority-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .priority-p1 {
+            background: #ff3b30;
+            color: white;
+        }
+
+        .priority-p2 {
+            background: #ff9500;
+            color: white;
+        }
+
+        .priority-p3 {
+            background: #ffcc00;
+            color: #1d1d1f;
+        }
+
+        .priority-p4 {
+            background: #34c759;
+            color: white;
+        }
+
+        .priority-p5 {
+            background: #007aff;
+            color: white;
+        }
+
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #f5f5f7;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .attachment-icon {
+            font-size: 16px;
+        }
+
+        .attachment-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .attachment-delete {
+            color: #ff3b30;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
         .task-delete {
             color: #ff3b30;
             cursor: pointer;
@@ -434,27 +533,150 @@
             min-height: 200px;
         }
 
+        .tag-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f5f5f7;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 13px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .tag-chip-delete {
+            cursor: pointer;
+            color: #ff3b30;
+            font-weight: bold;
+        }
+
+        .subtask-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f5f5f7;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .subtask-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #c7c7cc;
+            border-radius: 50%;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .subtask-checkbox.completed {
+            background: #34c759;
+            border-color: #34c759;
+            position: relative;
+        }
+
+        .subtask-checkbox.completed::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 10px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .subtask-content {
+            flex: 1;
+        }
+
+        .subtask-title {
+            font-size: 14px;
+        }
+
+        .subtask-title.completed {
+            text-decoration: line-through;
+            color: #86868b;
+        }
+
+        .subtask-date {
+            font-size: 12px;
+            color: #86868b;
+            margin-top: 4px;
+        }
+
+        .subtask-delete {
+            color: #ff3b30;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .task-item.has-details {
+            cursor: pointer;
+        }
+
+        .task-item.has-details:hover .task-title {
+            color: #007aff;
+        }
+
         @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: flex;
+            }
+
             .sidebar {
-                width: 100%;
-                position: absolute;
-                z-index: 100;
+                position: fixed;
+                z-index: 150;
                 transform: translateX(-100%);
                 transition: transform 0.3s;
+                height: 100vh;
             }
 
             .sidebar.mobile-open {
                 transform: translateX(0);
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
             }
 
-            .content-header, .tasks-container {
-                padding-left: 20px;
-                padding-right: 20px;
+            .content-header {
+                padding: 80px 20px 20px;
+            }
+
+            .content-header h2 {
+                font-size: 24px;
+            }
+
+            .tasks-container {
+                padding: 20px;
+            }
+
+            .task-input-container {
+                padding: 12px;
+            }
+
+            .task-meta {
+                flex-direction: column;
+            }
+
+            .task-meta select,
+            .task-meta input {
+                width: 100%;
+            }
+
+            .add-task-btn {
+                width: 100%;
+                margin-left: 0;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Mobile menu button -->
+    <button class="mobile-menu-btn" id="mobile-menu-btn" onclick="toggleMobileMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
     <div class="container">
         <!-- Sidebar -->
         <div class="sidebar">
@@ -496,6 +718,15 @@
                     <div id="projects-list"></div>
                     <button class="add-project-btn" onclick="showAddProjectModal()">+ Nieuw Project</button>
                 </div>
+
+                <div class="nav-group">
+                    <div class="nav-item" onclick="showSettingsModal()">
+                        <div class="nav-item-label">
+                            <span class="nav-item-icon">⚙️</span>
+                            <span>Instellingen</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -504,6 +735,11 @@
             <div class="content-header">
                 <h2 id="view-title">Inbox</h2>
                 <div class="subtitle" id="view-subtitle"></div>
+                <div style="margin-top: 16px;">
+                    <input type="text" id="search-input" placeholder="🔍 Zoeken in taken..." 
+                           style="width: 100%; max-width: 400px; padding: 10px 16px; border: 1px solid #e5e5e7; border-radius: 8px; font-size: 14px;"
+                           oninput="handleSearch()">
+                </div>
             </div>
 
             <div class="tasks-container">
@@ -513,8 +749,17 @@
                         <select id="task-project">
                             <option value="">Inbox</option>
                         </select>
+                        <select id="task-priority">
+                            <option value="">Geen prioriteit</option>
+                            <option value="p1">P1 - Hoogste</option>
+                            <option value="p2">P2 - Hoog</option>
+                            <option value="p3">P3 - Normaal</option>
+                            <option value="p4">P4 - Laag</option>
+                            <option value="p5">P5 - Laagste</option>
+                        </select>
                         <input type="date" id="task-date">
-                        <input type="text" id="task-tags" placeholder="Tags (komma gescheiden)">
+                        <select id="task-tags" multiple style="height: 38px;">
+                        </select>
                         <button class="add-task-btn" onclick="addTask()">Toevoegen</button>
                     </div>
                 </div>
@@ -562,9 +807,109 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div class="modal" id="settings-modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">Instellingen</div>
+            
+            <div style="margin-bottom: 24px;">
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">Tags Beheren</h3>
+                <div id="tags-list" style="margin-bottom: 12px;"></div>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="new-tag-input" placeholder="Nieuwe tag..." class="modal-input" style="margin-bottom: 0; flex: 1;">
+                    <button class="modal-btn primary" onclick="addTag()" style="padding: 10px 16px;">Toevoegen</button>
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="closeSettingsModal()">Sluiten</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Detail Modal -->
+    <div class="modal" id="task-detail-modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header" id="task-detail-title">Taak Details</div>
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Prioriteit</label>
+                <select id="task-detail-priority" class="modal-input" style="margin-bottom: 0;">
+                    <option value="">Geen prioriteit</option>
+                    <option value="p1">P1 - Hoogste</option>
+                    <option value="p2">P2 - Hoog</option>
+                    <option value="p3">P3 - Normaal</option>
+                    <option value="p4">P4 - Laag</option>
+                    <option value="p5">P5 - Laagste</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Notities</label>
+                <textarea id="task-notes" class="modal-input" style="min-height: 100px; resize: vertical;" placeholder="Voeg notities toe..."></textarea>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Bestanden & Links</label>
+                <div id="attachments-list" style="margin-bottom: 12px;"></div>
+                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                    <input type="text" id="new-url-input" placeholder="URL toevoegen (https://...)" class="modal-input" style="margin-bottom: 0; flex: 1;">
+                    <button class="modal-btn primary" onclick="addUrl()" style="padding: 10px 16px;">+ URL</button>
+                </div>
+                <div style="font-size: 12px; color: #86868b;">
+                    Let op: Bestandsupload werkt alleen als de app op een eigen server draait. Voor nu kun je links toevoegen.
+                </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">Subtaken</h3>
+                <div id="subtasks-list" style="margin-bottom: 12px;"></div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <input type="text" id="new-subtask-input" placeholder="Nieuwe subtaak..." class="modal-input" style="margin-bottom: 0; flex: 1; min-width: 150px;">
+                    <select id="new-subtask-priority" class="modal-input" style="margin-bottom: 0;">
+                        <option value="">Geen</option>
+                        <option value="p1">P1</option>
+                        <option value="p2">P2</option>
+                        <option value="p3">P3</option>
+                        <option value="p4">P4</option>
+                        <option value="p5">P5</option>
+                    </select>
+                    <input type="date" id="new-subtask-date" class="modal-input" style="margin-bottom: 0;">
+                    <button class="modal-btn primary" onclick="addSubtask()" style="padding: 10px 16px;">Toevoegen</button>
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="closeTaskDetailModal()">Sluiten</button>
+                <button class="modal-btn primary" onclick="saveTaskDetails()">Opslaan</button>
+            </div>
+        </div>
+    </div>
+
     <input type="file" id="import-file-input" style="display: none;" accept=".json" onchange="handleImport(event)">
 
     <script>
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const menuBtn = document.getElementById('mobile-menu-btn');
+            sidebar.classList.toggle('mobile-open');
+            menuBtn.classList.toggle('active');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            const sidebar = document.querySelector('.sidebar');
+            const menuBtn = document.getElementById('mobile-menu-btn');
+            
+            if (sidebar && sidebar.classList.contains('mobile-open')) {
+                if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+                    sidebar.classList.remove('mobile-open');
+                    menuBtn.classList.remove('active');
+                }
+            }
+        });
+
         // Firebase and data management
         let db = null;
         let unsubscribe = null;
@@ -574,9 +919,13 @@
         let data = {
             tasks: [],
             projects: [],
+            tags: [],
             currentView: 'inbox',
-            currentProject: null
+            currentProject: null,
+            searchQuery: ''
         };
+
+        let currentEditingTask = null;
 
         // Initialize Firebase
         function initFirebase(config) {
@@ -627,6 +976,17 @@
                         data.projects.push({ id: doc.id, ...doc.data() });
                     });
                     render();
+                });
+
+            // Listen to tags
+            db.collection('users').doc(userId).collection('tags')
+                .onSnapshot((snapshot) => {
+                    data.tags = [];
+                    snapshot.forEach((doc) => {
+                        data.tags.push({ id: doc.id, ...doc.data() });
+                    });
+                    renderTagsSelector();
+                    renderTagsList();
                 });
         }
 
@@ -683,12 +1043,19 @@
                 return;
             }
 
+            const tagSelect = document.getElementById('task-tags');
+            const selectedTags = Array.from(tagSelect.selectedOptions).map(opt => opt.value);
+
             const task = {
                 title: title,
                 completed: false,
                 project: document.getElementById('task-project').value,
+                priority: document.getElementById('task-priority').value,
                 date: document.getElementById('task-date').value,
-                tags: document.getElementById('task-tags').value.split(',').map(t => t.trim()).filter(t => t),
+                tags: selectedTags,
+                notes: '',
+                attachments: [],
+                subtasks: [],
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
@@ -698,8 +1065,9 @@
                 
                 // Clear inputs
                 document.getElementById('new-task-input').value = '';
+                document.getElementById('task-priority').value = '';
                 document.getElementById('task-date').value = '';
-                document.getElementById('task-tags').value = '';
+                tagSelect.selectedIndex = -1;
             } catch (error) {
                 console.error('Error adding task:', error);
                 updateSyncStatus('error', 'Fout bij toevoegen');
@@ -710,6 +1078,12 @@
             if (event.key === 'Enter') {
                 addTask();
             }
+        }
+
+        // Search functionality
+        function handleSearch() {
+            data.searchQuery = document.getElementById('search-input').value.toLowerCase();
+            render();
         }
 
         // Toggle task completion
@@ -738,6 +1112,315 @@
                 await db.collection('users').doc(userId).collection('tasks').doc(id).delete();
             } catch (error) {
                 console.error('Error deleting task:', error);
+                updateSyncStatus('error', 'Fout bij verwijderen');
+            }
+        }
+
+        // Settings Modal
+        function showSettingsModal() {
+            document.getElementById('settings-modal').classList.add('active');
+            renderTagsList();
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').classList.remove('active');
+            document.getElementById('new-tag-input').value = '';
+        }
+
+        // Tag Management
+        async function addTag() {
+            const name = document.getElementById('new-tag-input').value.trim();
+            if (!name) return;
+
+            if (!db) {
+                alert('Geen verbinding met Firebase.');
+                return;
+            }
+
+            try {
+                await db.collection('users').doc(userId).collection('tags').add({
+                    name: name,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                document.getElementById('new-tag-input').value = '';
+            } catch (error) {
+                console.error('Error adding tag:', error);
+            }
+        }
+
+        async function deleteTag(id) {
+            if (!db) return;
+            
+            if (confirm('Weet je zeker dat je deze tag wilt verwijderen?')) {
+                try {
+                    await db.collection('users').doc(userId).collection('tags').doc(id).delete();
+                } catch (error) {
+                    console.error('Error deleting tag:', error);
+                }
+            }
+        }
+
+        function renderTagsList() {
+            const tagsList = document.getElementById('tags-list');
+            if (!tagsList) return;
+
+            if (data.tags.length === 0) {
+                tagsList.innerHTML = '<p style="color: #86868b; font-size: 13px;">Geen tags aangemaakt</p>';
+                return;
+            }
+
+            tagsList.innerHTML = data.tags.map(tag => `
+                <span class="tag-chip">
+                    ${tag.name}
+                    <span class="tag-chip-delete" onclick="deleteTag('${tag.id}')">×</span>
+                </span>
+            `).join('');
+        }
+
+        function renderTagsSelector() {
+            const tagSelect = document.getElementById('task-tags');
+            if (!tagSelect) return;
+
+            tagSelect.innerHTML = data.tags.map(tag => 
+                `<option value="${tag.id}">${tag.name}</option>`
+            ).join('');
+        }
+
+        // Task Detail Modal
+        function showTaskDetailModal(taskId) {
+            const task = data.tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            currentEditingTask = taskId;
+            
+            document.getElementById('task-detail-title').textContent = task.title;
+            document.getElementById('task-detail-priority').value = task.priority || '';
+            document.getElementById('task-notes').value = task.notes || '';
+            
+            renderAttachments(task.attachments || []);
+            renderSubtasks(task.subtasks || []);
+            
+            document.getElementById('task-detail-modal').classList.add('active');
+        }
+
+        function closeTaskDetailModal() {
+            document.getElementById('task-detail-modal').classList.remove('active');
+            document.getElementById('new-subtask-input').value = '';
+            document.getElementById('new-subtask-priority').value = '';
+            document.getElementById('new-subtask-date').value = '';
+            document.getElementById('new-url-input').value = '';
+            currentEditingTask = null;
+        }
+
+        async function saveTaskDetails() {
+            if (!currentEditingTask || !db) return;
+
+            const priority = document.getElementById('task-detail-priority').value;
+            const notes = document.getElementById('task-notes').value;
+            const task = data.tasks.find(t => t.id === currentEditingTask);
+            
+            try {
+                updateSyncStatus('syncing', 'Synchroniseren...');
+                
+                // Calculate new date based on subtasks
+                let newDate = task.date || '';
+                if (task.subtasks && task.subtasks.length > 0) {
+                    const subtaskDates = task.subtasks
+                        .map(st => st.date)
+                        .filter(d => d)
+                        .sort()
+                        .reverse();
+                    if (subtaskDates.length > 0) {
+                        newDate = subtaskDates[0]; // Latest date
+                    }
+                }
+                
+                await db.collection('users').doc(userId).collection('tasks').doc(currentEditingTask)
+                    .update({ 
+                        priority: priority,
+                        notes: notes,
+                        date: newDate
+                    });
+                
+                closeTaskDetailModal();
+            } catch (error) {
+                console.error('Error saving task details:', error);
+                updateSyncStatus('error', 'Fout bij opslaan');
+            }
+        }
+
+        // Attachment Management
+        function renderAttachments(attachments) {
+            const attachmentsList = document.getElementById('attachments-list');
+            
+            if (!attachments || attachments.length === 0) {
+                attachmentsList.innerHTML = '<p style="color: #86868b; font-size: 13px;">Geen bestanden of links</p>';
+                return;
+            }
+
+            attachmentsList.innerHTML = attachments.map((att, index) => `
+                <div class="attachment-item">
+                    <span class="attachment-icon">${att.type === 'url' ? '🔗' : '📎'}</span>
+                    <a href="${att.url}" target="_blank" class="attachment-name" style="color: #007aff; text-decoration: none;">
+                        ${att.name || att.url}
+                    </a>
+                    <span class="attachment-delete" onclick="deleteAttachment(${index})">×</span>
+                </div>
+            `).join('');
+        }
+
+        async function addUrl() {
+            const url = document.getElementById('new-url-input').value.trim();
+            if (!url || !currentEditingTask) return;
+
+            // Basic URL validation
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                alert('URL moet beginnen met http:// of https://');
+                return;
+            }
+
+            const task = data.tasks.find(t => t.id === currentEditingTask);
+            if (!task) return;
+
+            const attachment = {
+                type: 'url',
+                url: url,
+                name: url,
+                addedAt: new Date().toISOString()
+            };
+
+            const updatedAttachments = [...(task.attachments || []), attachment];
+
+            try {
+                updateSyncStatus('syncing', 'Synchroniseren...');
+                await db.collection('users').doc(userId).collection('tasks').doc(currentEditingTask)
+                    .update({ attachments: updatedAttachments });
+                
+                document.getElementById('new-url-input').value = '';
+                
+                task.attachments = updatedAttachments;
+                renderAttachments(updatedAttachments);
+            } catch (error) {
+                console.error('Error adding URL:', error);
+                updateSyncStatus('error', 'Fout bij toevoegen');
+            }
+        }
+
+        async function deleteAttachment(index) {
+            if (!currentEditingTask) return;
+
+            const task = data.tasks.find(t => t.id === currentEditingTask);
+            if (!task || !task.attachments) return;
+
+            task.attachments.splice(index, 1);
+
+            try {
+                updateSyncStatus('syncing', 'Synchroniseren...');
+                await db.collection('users').doc(userId).collection('tasks').doc(currentEditingTask)
+                    .update({ attachments: task.attachments });
+                
+                renderAttachments(task.attachments);
+            } catch (error) {
+                console.error('Error deleting attachment:', error);
+                updateSyncStatus('error', 'Fout bij verwijderen');
+            }
+        }
+
+        // Subtask Management
+        function renderSubtasks(subtasks) {
+            const subtasksList = document.getElementById('subtasks-list');
+            
+            if (!subtasks || subtasks.length === 0) {
+                subtasksList.innerHTML = '<p style="color: #86868b; font-size: 13px;">Geen subtaken</p>';
+                return;
+            }
+
+            subtasksList.innerHTML = subtasks.map((subtask, index) => `
+                <div class="subtask-item">
+                    <div class="subtask-checkbox ${subtask.completed ? 'completed' : ''}" 
+                         onclick="toggleSubtask(${index})"></div>
+                    <div class="subtask-content">
+                        <div class="subtask-title ${subtask.completed ? 'completed' : ''}">
+                            ${subtask.title}
+                            ${subtask.priority ? `<span class="priority-badge priority-${subtask.priority}" style="margin-left: 8px;">${subtask.priority.toUpperCase()}</span>` : ''}
+                        </div>
+                        ${subtask.date ? `<div class="subtask-date">📅 ${formatDate(subtask.date)}</div>` : ''}
+                    </div>
+                    <div class="subtask-delete" onclick="deleteSubtask(${index})">×</div>
+                </div>
+            `).join('');
+        }
+
+        async function addSubtask() {
+            const title = document.getElementById('new-subtask-input').value.trim();
+            if (!title || !currentEditingTask) return;
+
+            const task = data.tasks.find(t => t.id === currentEditingTask);
+            if (!task) return;
+
+            const subtask = {
+                title: title,
+                completed: false,
+                priority: document.getElementById('new-subtask-priority').value,
+                date: document.getElementById('new-subtask-date').value
+            };
+
+            const updatedSubtasks = [...(task.subtasks || []), subtask];
+
+            try {
+                updateSyncStatus('syncing', 'Synchroniseren...');
+                await db.collection('users').doc(userId).collection('tasks').doc(currentEditingTask)
+                    .update({ subtasks: updatedSubtasks });
+                
+                document.getElementById('new-subtask-input').value = '';
+                document.getElementById('new-subtask-priority').value = '';
+                document.getElementById('new-subtask-date').value = '';
+                
+                // Update local state
+                task.subtasks = updatedSubtasks;
+                renderSubtasks(updatedSubtasks);
+            } catch (error) {
+                console.error('Error adding subtask:', error);
+                updateSyncStatus('error', 'Fout bij toevoegen');
+            }
+        }
+
+        async function toggleSubtask(index) {
+            if (!currentEditingTask) return;
+
+            const task = data.tasks.find(t => t.id === currentEditingTask);
+            if (!task || !task.subtasks) return;
+
+            task.subtasks[index].completed = !task.subtasks[index].completed;
+
+            try {
+                updateSyncStatus('syncing', 'Synchroniseren...');
+                await db.collection('users').doc(userId).collection('tasks').doc(currentEditingTask)
+                    .update({ subtasks: task.subtasks });
+                
+                renderSubtasks(task.subtasks);
+            } catch (error) {
+                console.error('Error toggling subtask:', error);
+                updateSyncStatus('error', 'Fout bij bijwerken');
+            }
+        }
+
+        async function deleteSubtask(index) {
+            if (!currentEditingTask) return;
+
+            const task = data.tasks.find(t => t.id === currentEditingTask);
+            if (!task || !task.subtasks) return;
+
+            task.subtasks.splice(index, 1);
+
+            try {
+                updateSyncStatus('syncing', 'Synchroniseren...');
+                await db.collection('users').doc(userId).collection('tasks').doc(currentEditingTask)
+                    .update({ subtasks: task.subtasks });
+                
+                renderSubtasks(task.subtasks);
+            } catch (error) {
+                console.error('Error deleting subtask:', error);
                 updateSyncStatus('error', 'Fout bij verwijderen');
             }
         }
@@ -814,6 +1497,14 @@
                 event.target.closest('.nav-item').classList.add('active');
             }
             
+            // Close mobile menu
+            const sidebar = document.querySelector('.sidebar');
+            const menuBtn = document.getElementById('mobile-menu-btn');
+            if (sidebar && sidebar.classList.contains('mobile-open')) {
+                sidebar.classList.remove('mobile-open');
+                menuBtn.classList.remove('active');
+            }
+            
             render();
         }
 
@@ -822,18 +1513,57 @@
             const today = new Date().toISOString().split('T')[0];
             const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
+            let filtered = [];
+            
             switch (data.currentView) {
                 case 'inbox':
-                    return data.tasks.filter(t => !t.project);
+                    filtered = data.tasks.filter(t => !t.project);
+                    break;
                 case 'today':
-                    return data.tasks.filter(t => t.date === today);
+                    filtered = data.tasks.filter(t => t.date === today);
+                    break;
                 case 'upcoming':
-                    return data.tasks.filter(t => t.date && t.date > today && t.date <= weekFromNow);
+                    filtered = data.tasks.filter(t => t.date && t.date > today && t.date <= weekFromNow);
+                    break;
                 case 'project':
-                    return data.tasks.filter(t => t.project == data.currentProject);
+                    filtered = data.tasks.filter(t => t.project == data.currentProject);
+                    break;
                 default:
-                    return data.tasks;
+                    filtered = data.tasks;
             }
+
+            // Apply search filter
+            if (data.searchQuery) {
+                filtered = filtered.filter(task => {
+                    const searchLower = data.searchQuery;
+                    
+                    // Search in title
+                    if (task.title.toLowerCase().includes(searchLower)) return true;
+                    
+                    // Search in notes
+                    if (task.notes && task.notes.toLowerCase().includes(searchLower)) return true;
+                    
+                    // Search in subtasks
+                    if (task.subtasks && task.subtasks.some(st => 
+                        st.title.toLowerCase().includes(searchLower)
+                    )) return true;
+                    
+                    // Search in project name
+                    const project = data.projects.find(p => p.id == task.project);
+                    if (project && project.name.toLowerCase().includes(searchLower)) return true;
+                    
+                    // Search in tags
+                    const taskTags = (task.tags || []).map(tagId => {
+                        const tag = data.tags.find(t => t.id === tagId);
+                        return tag ? tag.name.toLowerCase() : '';
+                    });
+                    if (taskTags.some(t => t.includes(searchLower))) return true;
+                    
+                    return false;
+                });
+            }
+
+            return filtered;
         }
 
         // Render everything
@@ -873,7 +1603,7 @@
                 tasksList.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">✨</div>
-                        <div>Geen taken</div>
+                        <div>${data.searchQuery ? 'Geen taken gevonden' : 'Geen taken'}</div>
                     </div>
                 `;
                 return;
@@ -883,19 +1613,30 @@
                 <div class="task-list">
                     ${tasks.map(task => {
                         const project = data.projects.find(p => p.id == task.project);
+                        const hasDetails = (task.notes && task.notes.trim()) || (task.subtasks && task.subtasks.length > 0) || (task.attachments && task.attachments.length > 0);
+                        const taskTags = (task.tags || []).map(tagId => {
+                            const tag = data.tags.find(t => t.id === tagId);
+                            return tag ? tag.name : null;
+                        }).filter(t => t);
+                        
                         return `
-                            <div class="task-item">
+                            <div class="task-item ${hasDetails ? 'has-details' : ''}" onclick="event.target.classList.contains('task-checkbox') || event.target.classList.contains('task-delete') ? null : showTaskDetailModal('${task.id}')">
                                 <div class="task-checkbox ${task.completed ? 'completed' : ''}" 
-                                     onclick="toggleTask('${task.id}')"></div>
+                                     onclick="event.stopPropagation(); toggleTask('${task.id}')"></div>
                                 <div class="task-content">
-                                    <div class="task-title ${task.completed ? 'completed' : ''}">${task.title}</div>
+                                    <div class="task-title ${task.completed ? 'completed' : ''}">
+                                        ${task.title}
+                                        ${task.priority ? `<span class="priority-badge priority-${task.priority}" style="margin-left: 8px;">${task.priority.toUpperCase()}</span>` : ''}
+                                    </div>
                                     <div class="task-details">
                                         ${project ? `<span>📁 ${project.name}</span>` : ''}
                                         ${task.date ? `<span>📅 ${formatDate(task.date)}</span>` : ''}
-                                        ${task.tags.map(tag => `<span class="task-tag">${tag}</span>`).join('')}
+                                        ${taskTags.map(tag => `<span class="task-tag">${tag}</span>`).join('')}
+                                        ${task.subtasks && task.subtasks.length > 0 ? `<span>📋 ${task.subtasks.filter(st => st.completed).length}/${task.subtasks.length}</span>` : ''}
+                                        ${task.attachments && task.attachments.length > 0 ? `<span>🔗 ${task.attachments.length}</span>` : ''}
                                     </div>
                                 </div>
-                                <div class="task-delete" onclick="deleteTask('${task.id}')">×</div>
+                                <div class="task-delete" onclick="event.stopPropagation(); deleteTask('${task.id}')">×</div>
                             </div>
                         `;
                     }).join('')}
