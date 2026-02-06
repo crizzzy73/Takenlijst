@@ -789,6 +789,12 @@
                 </div>
 
                 <div class="nav-group">
+                    <div class="nav-group-title">Lijstjes</div>
+                    <div id="lists-list"></div>
+                    <button class="add-project-btn" onclick="showAddListModal()">+ Nieuw Lijstje</button>
+                </div>
+
+                <div class="nav-group">
                     <div class="nav-item" onclick="showSettingsModal()">
                         <div class="nav-item-label">
                             <span class="nav-item-icon">⚙️</span>
@@ -810,10 +816,19 @@
             <div class="content-header">
                 <h2 id="view-title">Inbox</h2>
                 <div class="subtitle" id="view-subtitle"></div>
-                <div style="margin-top: 16px;">
+                <div style="margin-top: 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
                     <input type="text" id="search-input" placeholder="🔍 Zoeken in taken..." 
-                           style="width: 100%; max-width: 400px; padding: 10px 16px; border: 1px solid #e5e5e7; border-radius: 8px; font-size: 14px;"
+                           style="flex: 1; min-width: 200px; padding: 10px 16px; border: 1px solid #e0f2fe; border-radius: 8px; font-size: 14px;"
                            oninput="handleSearch()">
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <span style="font-size: 13px; color: #64748b; font-weight: 500;">Sorteer:</span>
+                        <select id="sort-select" onchange="handleSort()" style="padding: 8px 12px; border: 1px solid #e0f2fe; border-radius: 8px; font-size: 13px; background: white; cursor: pointer;">
+                            <option value="default">Standaard</option>
+                            <option value="priority">Prioriteit</option>
+                            <option value="date">Deadline</option>
+                            <option value="title">Naam (A-Z)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -833,6 +848,12 @@
                             <option value="p5">P5 - Laagste</option>
                         </select>
                         <input type="date" id="task-date">
+                        <select id="task-recurring">
+                            <option value="">Niet herhalend</option>
+                            <option value="daily">Dagelijks</option>
+                            <option value="weekly">Wekelijks</option>
+                            <option value="monthly">Maandelijks</option>
+                        </select>
                         <select id="task-tags" multiple style="height: 38px;">
                         </select>
                         <button class="add-task-btn" onclick="addTask()">Toevoegen</button>
@@ -852,6 +873,18 @@
             <div class="modal-buttons">
                 <button class="modal-btn secondary" onclick="closeProjectModal()">Annuleren</button>
                 <button class="modal-btn primary" onclick="addProject()">Toevoegen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add List Modal -->
+    <div class="modal" id="list-modal">
+        <div class="modal-content">
+            <div class="modal-header">Nieuw Lijstje</div>
+            <input type="text" class="modal-input" id="list-name-input" placeholder="Lijstnaam (bijv. Boodschappen)...">
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="closeListModal()">Annuleren</button>
+                <button class="modal-btn primary" onclick="addList()">Toevoegen</button>
             </div>
         </div>
     </div>
@@ -931,8 +964,27 @@
             </div>
 
             <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Tags</label>
+                <select id="task-detail-tags" multiple class="modal-input" style="margin-bottom: 0; min-height: 80px;">
+                </select>
+                <div style="font-size: 12px; color: #64748b; margin-top: 4px;">
+                    Houd Ctrl/Cmd ingedrukt om meerdere tags te selecteren
+                </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
                 <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Deadline</label>
                 <input type="date" id="task-detail-date" class="modal-input" style="margin-bottom: 0;">
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Herhalend</label>
+                <select id="task-detail-recurring" class="modal-input" style="margin-bottom: 0;">
+                    <option value="">Niet herhalend</option>
+                    <option value="daily">Dagelijks</option>
+                    <option value="weekly">Wekelijks</option>
+                    <option value="monthly">Maandelijks</option>
+                </select>
             </div>
 
             <div style="margin-bottom: 16px;">
@@ -1022,10 +1074,13 @@
         let data = {
             tasks: [],
             projects: [],
+            lists: [],
             tags: [],
             currentView: 'inbox',
             currentProject: null,
-            searchQuery: ''
+            currentList: null,
+            searchQuery: '',
+            sortOrder: 'default'
         };
 
         let currentEditingTask = null;
@@ -1093,6 +1148,16 @@
                     renderTagsSelector();
                     renderTagsList();
                 });
+
+            // Listen to lists
+            db.collection('users').doc(userId).collection('lists')
+                .onSnapshot((snapshot) => {
+                    data.lists = [];
+                    snapshot.forEach((doc) => {
+                        data.lists.push({ id: doc.id, ...doc.data() });
+                    });
+                    renderLists();
+                });
         }
 
         // Save Firebase config
@@ -1158,6 +1223,7 @@
                 project: document.getElementById('task-project').value,
                 priority: document.getElementById('task-priority').value,
                 date: document.getElementById('task-date').value,
+                recurring: document.getElementById('task-recurring').value,
                 tags: selectedTags,
                 notes: '',
                 attachments: [],
@@ -1173,6 +1239,7 @@
                 document.getElementById('new-task-input').value = '';
                 document.getElementById('task-priority').value = '';
                 document.getElementById('task-date').value = '';
+                document.getElementById('task-recurring').value = '';
                 tagSelect.selectedIndex = -1;
             } catch (error) {
                 console.error('Error adding task:', error);
@@ -1192,6 +1259,45 @@
             render();
         }
 
+        // Sort functionality
+        function handleSort() {
+            data.sortOrder = document.getElementById('sort-select').value;
+            render();
+        }
+
+        function sortTasks(tasks) {
+            const tasksCopy = [...tasks];
+            
+            switch (data.sortOrder) {
+                case 'priority':
+                    // P1 (highest) to P5 (lowest), then no priority
+                    const priorityOrder = { 'p1': 1, 'p2': 2, 'p3': 3, 'p4': 4, 'p5': 5, '': 6 };
+                    return tasksCopy.sort((a, b) => {
+                        const aPriority = priorityOrder[a.priority || ''] || 6;
+                        const bPriority = priorityOrder[b.priority || ''] || 6;
+                        return aPriority - bPriority;
+                    });
+                
+                case 'date':
+                    // Soonest first, then no date
+                    return tasksCopy.sort((a, b) => {
+                        if (!a.date && !b.date) return 0;
+                        if (!a.date) return 1;
+                        if (!b.date) return -1;
+                        return a.date.localeCompare(b.date);
+                    });
+                
+                case 'title':
+                    // Alphabetical A-Z
+                    return tasksCopy.sort((a, b) => a.title.localeCompare(b.title));
+                
+                case 'default':
+                default:
+                    // Original order (by creation time)
+                    return tasksCopy;
+            }
+        }
+
         // Toggle task completion
         async function toggleTask(id) {
             if (!db) return;
@@ -1202,10 +1308,25 @@
                     updateSyncStatus('syncing', 'Synchroniseren...');
                     const newCompleted = !task.completed;
                     
-                    // If marking as complete, archive after a delay
+                    // If marking as complete
                     if (newCompleted) {
                         await db.collection('users').doc(userId).collection('tasks').doc(id)
                             .update({ completed: true });
+                        
+                        // If recurring, create next occurrence
+                        if (task.recurring && task.date) {
+                            const nextDate = calculateNextDate(task.date, task.recurring);
+                            const nextTask = {
+                                ...task,
+                                id: undefined,
+                                completed: false,
+                                archived: false,
+                                date: nextDate,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            };
+                            delete nextTask.id;
+                            await db.collection('users').doc(userId).collection('tasks').add(nextTask);
+                        }
                         
                         // Archive after 1 second
                         setTimeout(async () => {
@@ -1231,6 +1352,24 @@
                     updateSyncStatus('error', 'Fout bij bijwerken');
                 }
             }
+        }
+
+        function calculateNextDate(currentDate, recurring) {
+            const date = new Date(currentDate + 'T00:00:00');
+            
+            switch (recurring) {
+                case 'daily':
+                    date.setDate(date.getDate() + 1);
+                    break;
+                case 'weekly':
+                    date.setDate(date.getDate() + 7);
+                    break;
+                case 'monthly':
+                    date.setMonth(date.getMonth() + 1);
+                    break;
+            }
+            
+            return date.toISOString().split('T')[0];
         }
 
         // Delete task
@@ -1402,8 +1541,22 @@ Current Project: ${data.currentProject || 'none'}
                 data.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
             projectSelect.value = task.project || '';
             
+            // Populate tags selector
+            const tagsSelect = document.getElementById('task-detail-tags');
+            tagsSelect.innerHTML = data.tags.map(tag => 
+                `<option value="${tag.id}">${tag.name}</option>`
+            ).join('');
+            // Select current tags
+            const taskTags = task.tags || [];
+            Array.from(tagsSelect.options).forEach(option => {
+                option.selected = taskTags.includes(option.value);
+            });
+            
             // Populate date
             document.getElementById('task-detail-date').value = task.date || '';
+            
+            // Populate recurring
+            document.getElementById('task-detail-recurring').value = task.recurring || '';
             
             // Populate priority
             document.getElementById('task-detail-priority').value = task.priority || '';
@@ -1431,8 +1584,14 @@ Current Project: ${data.currentProject || 'none'}
 
             const project = document.getElementById('task-detail-project').value;
             const date = document.getElementById('task-detail-date').value;
+            const recurring = document.getElementById('task-detail-recurring').value;
             const priority = document.getElementById('task-detail-priority').value;
             const notes = document.getElementById('task-notes').value;
+            
+            // Get selected tags
+            const tagsSelect = document.getElementById('task-detail-tags');
+            const selectedTags = Array.from(tagsSelect.selectedOptions).map(opt => opt.value);
+            
             const task = data.tasks.find(t => t.id === currentEditingTask);
             
             try {
@@ -1455,7 +1614,9 @@ Current Project: ${data.currentProject || 'none'}
                     .update({ 
                         project: project,
                         date: finalDate,
+                        recurring: recurring,
                         priority: priority,
+                        tags: selectedTags,
                         notes: notes
                     });
                 
@@ -1675,6 +1836,126 @@ Current Project: ${data.currentProject || 'none'}
             }
         }
 
+        // List management
+        function showAddListModal() {
+            document.getElementById('list-modal').classList.add('active');
+            document.getElementById('list-name-input').focus();
+        }
+
+        function closeListModal() {
+            document.getElementById('list-modal').classList.remove('active');
+            document.getElementById('list-name-input').value = '';
+        }
+
+        async function addList() {
+            const name = document.getElementById('list-name-input').value.trim();
+            if (!name) return;
+
+            if (!db) {
+                alert('Geen verbinding met Firebase.');
+                return;
+            }
+
+            try {
+                updateSyncStatus('syncing', 'Synchroniseren...');
+                await db.collection('users').doc(userId).collection('lists').add({
+                    name: name,
+                    items: [],
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                closeListModal();
+            } catch (error) {
+                console.error('Error adding list:', error);
+                updateSyncStatus('error', 'Fout bij toevoegen');
+            }
+        }
+
+        function renderLists() {
+            const listsContainer = document.getElementById('lists-list');
+            if (!listsContainer) return;
+
+            if (data.lists.length === 0) {
+                listsContainer.innerHTML = '';
+                return;
+            }
+
+            listsContainer.innerHTML = data.lists.map(list => `
+                <div class="nav-item ${data.currentView === 'list' && data.currentList === list.id ? 'active' : ''}" 
+                     onclick="switchView('list', '${list.id}')">
+                    <div class="nav-item-label">
+                        <span class="nav-item-icon">📝</span>
+                        <span>${list.name}</span>
+                    </div>
+                    <span class="nav-item-count">${(list.items || []).filter(item => !item.checked).length}</span>
+                </div>
+            `).join('');
+        }
+
+        // List item functions
+        function handleListItemEnter(event) {
+            if (event.key === 'Enter') {
+                addListItem();
+            }
+        }
+
+        async function addListItem() {
+            const input = document.getElementById('new-list-item-input');
+            const text = input.value.trim();
+            if (!text || !data.currentList) return;
+
+            const list = data.lists.find(l => l.id === data.currentList);
+            if (!list) return;
+
+            const items = list.items || [];
+            items.push({ text: text, checked: false });
+
+            try {
+                updateSyncStatus('syncing', 'Synchroniseren...');
+                await db.collection('users').doc(userId).collection('lists').doc(data.currentList)
+                    .update({ items: items });
+                input.value = '';
+            } catch (error) {
+                console.error('Error adding list item:', error);
+                updateSyncStatus('error', 'Fout bij toevoegen');
+            }
+        }
+
+        async function toggleListItem(index) {
+            if (!data.currentList) return;
+
+            const list = data.lists.find(l => l.id === data.currentList);
+            if (!list || !list.items) return;
+
+            list.items[index].checked = !list.items[index].checked;
+
+            try {
+                updateSyncStatus('syncing', 'Synchroniseren...');
+                await db.collection('users').doc(userId).collection('lists').doc(data.currentList)
+                    .update({ items: list.items });
+            } catch (error) {
+                console.error('Error toggling list item:', error);
+                updateSyncStatus('error', 'Fout bij bijwerken');
+            }
+        }
+
+        async function deleteListItem(index) {
+            if (!data.currentList) return;
+
+            const list = data.lists.find(l => l.id === data.currentList);
+            if (!list || !list.items) return;
+
+            list.items.splice(index, 1);
+
+            try {
+                updateSyncStatus('syncing', 'Synchroniseren...');
+                await db.collection('users').doc(userId).collection('lists').doc(data.currentList)
+                    .update({ items: list.items });
+            } catch (error) {
+                console.error('Error deleting list item:', error);
+                updateSyncStatus('error', 'Fout bij verwijderen');
+            }
+        }
+
         // Delete project
         async function deleteProject(id) {
             if (!db) return;
@@ -1705,6 +1986,7 @@ Current Project: ${data.currentProject || 'none'}
         function switchView(view, projectId = null) {
             data.currentView = view;
             data.currentProject = projectId;
+            data.currentList = view === 'list' ? projectId : null;
             
             // Update active state
             document.querySelectorAll('.nav-item').forEach(item => {
@@ -1783,7 +2065,8 @@ Current Project: ${data.currentProject || 'none'}
                 });
             }
 
-            return filtered;
+            // Apply sorting
+            return sortTasks(filtered);
         }
 
         // Render everything
@@ -1824,6 +2107,39 @@ Current Project: ${data.currentProject || 'none'}
 
         function renderTasks() {
             const tasksList = document.getElementById('tasks-list');
+            
+            // If in list view, render list items instead of tasks
+            if (data.currentView === 'list' && data.currentList) {
+                const list = data.lists.find(l => l.id === data.currentList);
+                if (!list) {
+                    tasksList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">❓</div><div>Lijstje niet gevonden</div></div>';
+                    return;
+                }
+
+                const items = list.items || [];
+                
+                tasksList.innerHTML = `
+                    <div class="task-input-container">
+                        <input type="text" class="task-input" id="new-list-item-input" placeholder="Nieuw item..." onkeypress="handleListItemEnter(event)">
+                        <button class="add-task-btn" onclick="addListItem()">Toevoegen</button>
+                    </div>
+                    ${items.length === 0 ? '<div class="empty-state"><div class="empty-state-icon">📝</div><div>Geen items</div></div>' : `
+                    <div class="task-list">
+                        ${items.map((item, index) => `
+                            <div class="task-item">
+                                <div class="task-checkbox ${item.checked ? 'completed' : ''}" 
+                                     onclick="toggleListItem(${index})"></div>
+                                <div class="task-content">
+                                    <div class="task-title ${item.checked ? 'completed' : ''}">${item.text}</div>
+                                </div>
+                                <div class="task-delete" onclick="deleteListItem(${index})">×</div>
+                            </div>
+                        `).join('')}
+                    </div>`}
+                `;
+                return;
+            }
+
             const tasks = getFilteredTasks();
 
             if (tasks.length === 0) {
@@ -1857,8 +2173,8 @@ Current Project: ${data.currentProject || 'none'}
                 // Render tasks without project
                 if (noProject.length > 0) {
                     html += `<div style="margin-bottom: 24px;">
-                        <h3 style="font-size: 14px; font-weight: 600; color: #86868b; margin-bottom: 12px; padding: 0 16px;">INBOX</h3>
-                        <div class="task-list">${renderTaskItems(noProject)}</div>
+                        <h3 style="font-size: 14px; font-weight: 600; color: #64748b; margin-bottom: 12px; padding: 0 16px;">INBOX</h3>
+                        <div class="task-list">${renderTaskItems(sortTasks(noProject))}</div>
                     </div>`;
                 }
 
@@ -1868,8 +2184,8 @@ Current Project: ${data.currentProject || 'none'}
                     const projectName = project ? project.name : 'Onbekend Project';
                     
                     html += `<div style="margin-bottom: 24px;">
-                        <h3 style="font-size: 14px; font-weight: 600; color: #86868b; margin-bottom: 12px; padding: 0 16px;">📁 ${projectName.toUpperCase()}</h3>
-                        <div class="task-list">${renderTaskItems(grouped[projectId])}</div>
+                        <h3 style="font-size: 14px; font-weight: 600; color: #64748b; margin-bottom: 12px; padding: 0 16px;">📁 ${projectName.toUpperCase()}</h3>
+                        <div class="task-list">${renderTaskItems(sortTasks(grouped[projectId]))}</div>
                     </div>`;
                 });
 
@@ -1888,6 +2204,11 @@ Current Project: ${data.currentProject || 'none'}
                     return tag ? tag.name : null;
                 }).filter(t => t);
                 
+                const recurringLabel = task.recurring ? 
+                    (task.recurring === 'daily' ? '🔁 Dagelijks' : 
+                     task.recurring === 'weekly' ? '🔁 Wekelijks' : 
+                     task.recurring === 'monthly' ? '🔁 Maandelijks' : '') : '';
+                
                 return `
                     <div class="task-item ${hasDetails ? 'has-details' : ''}" onclick="event.target.classList.contains('task-checkbox') || event.target.classList.contains('task-delete') ? null : showTaskDetailModal('${task.id}')">
                         <div class="task-checkbox ${task.completed ? 'completed' : ''}" 
@@ -1900,6 +2221,7 @@ Current Project: ${data.currentProject || 'none'}
                             <div class="task-details">
                                 ${project && data.currentView !== 'archive' ? `<span>📁 ${project.name}</span>` : ''}
                                 ${task.date ? `<span>📅 ${formatDate(task.date)}</span>` : ''}
+                                ${recurringLabel ? `<span>${recurringLabel}</span>` : ''}
                                 ${taskTags.map(tag => `<span class="task-tag">${tag}</span>`).join('')}
                                 ${task.subtasks && task.subtasks.length > 0 ? `<span>📋 ${task.subtasks.filter(st => st.completed).length}/${task.subtasks.length}</span>` : ''}
                                 ${task.attachments && task.attachments.length > 0 ? `<span>🔗 ${task.attachments.length}</span>` : ''}
@@ -1950,6 +2272,13 @@ Current Project: ${data.currentProject || 'none'}
                 case 'archive':
                     titleEl.textContent = 'Archief';
                     subtitleEl.textContent = 'Afgeronde taken';
+                    break;
+                case 'list':
+                    const list = data.lists.find(l => l.id === data.currentList);
+                    titleEl.textContent = list ? list.name : 'Lijstje';
+                    const items = list ? list.items || [] : [];
+                    const unchecked = items.filter(i => !i.checked).length;
+                    subtitleEl.textContent = `${unchecked} van ${items.length} items`;
                     break;
                 case 'project':
                     const project = data.projects.find(p => p.id === data.currentProject);
