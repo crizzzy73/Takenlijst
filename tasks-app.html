@@ -559,18 +559,47 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: #f5f5f7;
-            padding: 6px 12px;
+            background: #e0f2fe;
+            color: #2e3192;
+            padding: 4px 10px;
             border-radius: 16px;
-            font-size: 13px;
+            font-size: 12px;
             margin-right: 8px;
             margin-bottom: 8px;
+            font-weight: 500;
         }
 
         .tag-chip-delete {
             cursor: pointer;
-            color: #ff3b30;
+            color: #2e3192;
             font-weight: bold;
+            font-size: 14px;
+            margin-left: 2px;
+        }
+
+        .tag-chip-delete:hover {
+            color: #ff3b30;
+        }
+
+        .tag-dropdown-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            border-bottom: 1px solid #f0f9ff;
+        }
+
+        .tag-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .tag-dropdown-item:hover {
+            background: #f0f9ff;
+        }
+
+        .tag-dropdown-item.selected {
+            background: #e0f2fe;
+            color: #2e3192;
+            font-weight: 500;
         }
 
         .subtask-item {
@@ -854,8 +883,14 @@
                             <option value="weekly">Wekelijks</option>
                             <option value="monthly">Maandelijks</option>
                         </select>
-                        <select id="task-tags" multiple style="height: 38px;">
-                        </select>
+                        <div style="position: relative;">
+                            <button type="button" id="task-tags-btn" onclick="toggleTagsDropdown()" style="padding: 6px 12px; border: 1px solid #e0f2fe; border-radius: 6px; font-size: 13px; background: white; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                <span>🏷️ Tags</span>
+                                <span id="task-tags-count" style="background: #e0f2fe; padding: 2px 6px; border-radius: 4px; font-size: 11px;"></span>
+                            </button>
+                            <div id="task-tags-dropdown" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 4px; background: white; border: 1px solid #e0f2fe; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); min-width: 200px; max-height: 200px; overflow-y: auto; z-index: 100;">
+                            </div>
+                        </div>
                         <button class="add-task-btn" onclick="addTask()">Toevoegen</button>
                     </div>
                 </div>
@@ -965,10 +1000,14 @@
 
             <div style="margin-bottom: 16px;">
                 <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Tags</label>
-                <select id="task-detail-tags" multiple class="modal-input" style="margin-bottom: 0; min-height: 80px;">
-                </select>
-                <div style="font-size: 12px; color: #64748b; margin-top: 4px;">
-                    Houd Ctrl/Cmd ingedrukt om meerdere tags te selecteren
+                <div id="task-detail-tags-container" style="display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; border: 1px solid #e0f2fe; border-radius: 8px; min-height: 44px; background: #f8fafc;">
+                </div>
+                <div style="position: relative; margin-top: 8px;">
+                    <button type="button" onclick="toggleDetailTagsDropdown()" style="padding: 8px 12px; border: 1px solid #e0f2fe; border-radius: 6px; font-size: 13px; background: white; cursor: pointer; width: 100%;">
+                        + Tag toevoegen
+                    </button>
+                    <div id="task-detail-tags-dropdown" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 4px; background: white; border: 1px solid #e0f2fe; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-height: 200px; overflow-y: auto; z-index: 100;">
+                    </div>
                 </div>
             </div>
 
@@ -1145,7 +1184,6 @@
                     snapshot.forEach((doc) => {
                         data.tags.push({ id: doc.id, ...doc.data() });
                     });
-                    renderTagsSelector();
                     renderTagsList();
                 });
 
@@ -1203,6 +1241,56 @@
             textEl.textContent = text;
         }
 
+        let selectedNewTaskTags = [];
+        let selectedDetailTaskTags = [];
+
+        function toggleTagsDropdown() {
+            const dropdown = document.getElementById('task-tags-dropdown');
+            const isVisible = dropdown.style.display === 'block';
+            dropdown.style.display = isVisible ? 'none' : 'block';
+            
+            if (!isVisible) {
+                renderNewTaskTagsDropdown();
+            }
+        }
+
+        function renderNewTaskTagsDropdown() {
+            const dropdown = document.getElementById('task-tags-dropdown');
+            dropdown.innerHTML = data.tags.map(tag => `
+                <div class="tag-dropdown-item ${selectedNewTaskTags.includes(tag.id) ? 'selected' : ''}" 
+                     onclick="toggleNewTaskTag('${tag.id}')">
+                    ${tag.name} ${selectedNewTaskTags.includes(tag.id) ? '✓' : ''}
+                </div>
+            `).join('') || '<div style="padding: 10px; color: #64748b; font-size: 13px;">Geen tags beschikbaar</div>';
+        }
+
+        function toggleNewTaskTag(tagId) {
+            const index = selectedNewTaskTags.indexOf(tagId);
+            if (index > -1) {
+                selectedNewTaskTags.splice(index, 1);
+            } else {
+                selectedNewTaskTags.push(tagId);
+            }
+            renderNewTaskTagsDropdown();
+            updateNewTaskTagsCount();
+        }
+
+        function updateNewTaskTagsCount() {
+            const count = document.getElementById('task-tags-count');
+            count.textContent = selectedNewTaskTags.length || '';
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#task-tags-btn') && !e.target.closest('#task-tags-dropdown')) {
+                document.getElementById('task-tags-dropdown').style.display = 'none';
+            }
+            if (!e.target.closest('[onclick*="toggleDetailTagsDropdown"]') && !e.target.closest('#task-detail-tags-dropdown')) {
+                const detailDropdown = document.getElementById('task-detail-tags-dropdown');
+                if (detailDropdown) detailDropdown.style.display = 'none';
+            }
+        });
+
         // Add task
         async function addTask() {
             const title = document.getElementById('new-task-input').value.trim();
@@ -1213,9 +1301,6 @@
                 return;
             }
 
-            const tagSelect = document.getElementById('task-tags');
-            const selectedTags = Array.from(tagSelect.selectedOptions).map(opt => opt.value);
-
             const task = {
                 title: title,
                 completed: false,
@@ -1224,7 +1309,7 @@
                 priority: document.getElementById('task-priority').value,
                 date: document.getElementById('task-date').value,
                 recurring: document.getElementById('task-recurring').value,
-                tags: selectedTags,
+                tags: selectedNewTaskTags,
                 notes: '',
                 attachments: [],
                 subtasks: [],
@@ -1240,7 +1325,8 @@
                 document.getElementById('task-priority').value = '';
                 document.getElementById('task-date').value = '';
                 document.getElementById('task-recurring').value = '';
-                tagSelect.selectedIndex = -1;
+                selectedNewTaskTags = [];
+                updateNewTaskTagsCount();
             } catch (error) {
                 console.error('Error adding task:', error);
                 updateSyncStatus('error', 'Fout bij toevoegen');
@@ -1532,6 +1618,7 @@ Current Project: ${data.currentProject || 'none'}
             if (!task) return;
 
             currentEditingTask = taskId;
+            selectedDetailTaskTags = [...(task.tags || [])];
             
             document.getElementById('task-detail-title').textContent = task.title;
             
@@ -1541,16 +1628,8 @@ Current Project: ${data.currentProject || 'none'}
                 data.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
             projectSelect.value = task.project || '';
             
-            // Populate tags selector
-            const tagsSelect = document.getElementById('task-detail-tags');
-            tagsSelect.innerHTML = data.tags.map(tag => 
-                `<option value="${tag.id}">${tag.name}</option>`
-            ).join('');
-            // Select current tags
-            const taskTags = task.tags || [];
-            Array.from(tagsSelect.options).forEach(option => {
-                option.selected = taskTags.includes(option.value);
-            });
+            // Render selected tags as chips
+            renderDetailTaskTags();
             
             // Populate date
             document.getElementById('task-detail-date').value = task.date || '';
@@ -1570,6 +1649,58 @@ Current Project: ${data.currentProject || 'none'}
             document.getElementById('task-detail-modal').classList.add('active');
         }
 
+        function renderDetailTaskTags() {
+            const container = document.getElementById('task-detail-tags-container');
+            if (selectedDetailTaskTags.length === 0) {
+                container.innerHTML = '<span style="color: #94a3b8; font-size: 13px;">Geen tags geselecteerd</span>';
+            } else {
+                container.innerHTML = selectedDetailTaskTags.map(tagId => {
+                    const tag = data.tags.find(t => t.id === tagId);
+                    if (!tag) return '';
+                    return `<span class="tag-chip">${tag.name}<span class="tag-chip-delete" onclick="removeDetailTaskTag('${tagId}')">×</span></span>`;
+                }).join('');
+            }
+        }
+
+        function toggleDetailTagsDropdown() {
+            const dropdown = document.getElementById('task-detail-tags-dropdown');
+            const isVisible = dropdown.style.display === 'block';
+            dropdown.style.display = isVisible ? 'none' : 'block';
+            
+            if (!isVisible) {
+                renderDetailTaskTagsDropdown();
+            }
+        }
+
+        function renderDetailTaskTagsDropdown() {
+            const dropdown = document.getElementById('task-detail-tags-dropdown');
+            dropdown.innerHTML = data.tags.map(tag => `
+                <div class="tag-dropdown-item ${selectedDetailTaskTags.includes(tag.id) ? 'selected' : ''}" 
+                     onclick="toggleDetailTaskTag('${tag.id}')">
+                    ${tag.name} ${selectedDetailTaskTags.includes(tag.id) ? '✓' : ''}
+                </div>
+            `).join('') || '<div style="padding: 10px; color: #64748b; font-size: 13px;">Geen tags beschikbaar</div>';
+        }
+
+        function toggleDetailTaskTag(tagId) {
+            const index = selectedDetailTaskTags.indexOf(tagId);
+            if (index > -1) {
+                selectedDetailTaskTags.splice(index, 1);
+            } else {
+                selectedDetailTaskTags.push(tagId);
+            }
+            renderDetailTaskTags();
+            renderDetailTaskTagsDropdown();
+        }
+
+        function removeDetailTaskTag(tagId) {
+            const index = selectedDetailTaskTags.indexOf(tagId);
+            if (index > -1) {
+                selectedDetailTaskTags.splice(index, 1);
+            }
+            renderDetailTaskTags();
+        }
+
         function closeTaskDetailModal() {
             document.getElementById('task-detail-modal').classList.remove('active');
             document.getElementById('new-subtask-input').value = '';
@@ -1577,6 +1708,7 @@ Current Project: ${data.currentProject || 'none'}
             document.getElementById('new-subtask-date').value = '';
             document.getElementById('new-url-input').value = '';
             currentEditingTask = null;
+            selectedDetailTaskTags = [];
         }
 
         async function saveTaskDetails() {
@@ -1587,10 +1719,6 @@ Current Project: ${data.currentProject || 'none'}
             const recurring = document.getElementById('task-detail-recurring').value;
             const priority = document.getElementById('task-detail-priority').value;
             const notes = document.getElementById('task-notes').value;
-            
-            // Get selected tags
-            const tagsSelect = document.getElementById('task-detail-tags');
-            const selectedTags = Array.from(tagsSelect.selectedOptions).map(opt => opt.value);
             
             const task = data.tasks.find(t => t.id === currentEditingTask);
             
@@ -1616,7 +1744,7 @@ Current Project: ${data.currentProject || 'none'}
                         date: finalDate,
                         recurring: recurring,
                         priority: priority,
-                        tags: selectedTags,
+                        tags: selectedDetailTaskTags,
                         notes: notes
                     });
                 
@@ -2117,26 +2245,79 @@ Current Project: ${data.currentProject || 'none'}
                 }
 
                 const items = list.items || [];
+                const uncheckedItems = items.filter(i => !i.checked);
+                const checkedItems = items.filter(i => i.checked);
                 
                 tasksList.innerHTML = `
-                    <div class="task-input-container">
-                        <input type="text" class="task-input" id="new-list-item-input" placeholder="Nieuw item..." onkeypress="handleListItemEnter(event)">
-                        <button class="add-task-btn" onclick="addListItem()">Toevoegen</button>
+                    <div class="task-input-container" style="margin-bottom: 30px;">
+                        <input type="text" class="task-input" id="new-list-item-input" 
+                               placeholder="Nieuw item toevoegen..." 
+                               onkeypress="handleListItemEnter(event)"
+                               style="font-size: 16px; padding: 12px 0;">
+                        <div style="margin-top: 12px;">
+                            <button class="add-task-btn" onclick="addListItem()" style="width: auto; padding: 10px 24px;">
+                                Toevoegen
+                            </button>
+                        </div>
                     </div>
-                    ${items.length === 0 ? '<div class="empty-state"><div class="empty-state-icon">📝</div><div>Geen items</div></div>' : `
-                    <div class="task-list">
-                        ${items.map((item, index) => `
-                            <div class="task-item">
-                                <div class="task-checkbox ${item.checked ? 'completed' : ''}" 
-                                     onclick="toggleListItem(${index})"></div>
-                                <div class="task-content">
-                                    <div class="task-title ${item.checked ? 'completed' : ''}">${item.text}</div>
+                    
+                    ${items.length === 0 ? 
+                        '<div class="empty-state"><div class="empty-state-icon">📝</div><div>Nog geen items toegevoegd</div></div>' 
+                        : 
+                        `${uncheckedItems.length > 0 ? `
+                            <div style="margin-bottom: 24px;">
+                                <h3 style="font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 12px; padding: 0 4px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    Te doen (${uncheckedItems.length})
+                                </h3>
+                                <div class="task-list">
+                                    ${uncheckedItems.map((item) => {
+                                        const index = items.indexOf(item);
+                                        return `
+                                            <div class="task-item">
+                                                <div class="task-checkbox" 
+                                                     onclick="toggleListItem(${index})"></div>
+                                                <div class="task-content" style="flex: 1;">
+                                                    <div class="task-title" style="font-size: 15px;">${item.text}</div>
+                                                </div>
+                                                <div class="task-delete" onclick="deleteListItem(${index})">×</div>
+                                            </div>
+                                        `;
+                                    }).join('')}
                                 </div>
-                                <div class="task-delete" onclick="deleteListItem(${index})">×</div>
                             </div>
-                        `).join('')}
-                    </div>`}
+                        ` : ''}
+                        
+                        ${checkedItems.length > 0 ? `
+                            <div>
+                                <h3 style="font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 12px; padding: 0 4px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    Afgevinkt (${checkedItems.length})
+                                </h3>
+                                <div class="task-list">
+                                    ${checkedItems.map((item) => {
+                                        const index = items.indexOf(item);
+                                        return `
+                                            <div class="task-item" style="opacity: 0.6;">
+                                                <div class="task-checkbox completed" 
+                                                     onclick="toggleListItem(${index})"></div>
+                                                <div class="task-content" style="flex: 1;">
+                                                    <div class="task-title completed" style="font-size: 15px;">${item.text}</div>
+                                                </div>
+                                                <div class="task-delete" onclick="deleteListItem(${index})">×</div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        ` : ''}`
+                    }
                 `;
+                
+                // Focus on input after render
+                setTimeout(() => {
+                    const input = document.getElementById('new-list-item-input');
+                    if (input) input.focus();
+                }, 100);
+                
                 return;
             }
 
