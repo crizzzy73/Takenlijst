@@ -2053,14 +2053,14 @@ Current Project: ${data.currentProject || 'none'}
             listsContainer.innerHTML = data.lists.map(list => `
                 <div class="nav-item ${data.currentView === 'list' && data.currentList === list.id ? 'active' : ''}" 
                      onclick="switchView('list', '${list.id}')"
-                     style="position: relative; padding-right: 40px;">
-                    <div class="nav-item-label">
+                     style="display: flex; align-items: center; gap: 8px;">
+                    <div class="nav-item-label" style="flex: 1; min-width: 0;">
                         <span class="nav-item-icon">📝</span>
-                        <span>${list.name}</span>
+                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${list.name}</span>
                     </div>
                     <span class="nav-item-count">${(list.items || []).filter(item => !item.checked).length}</span>
                     <span onclick="event.stopPropagation(); deleteList('${list.id}')" 
-                          style="position: absolute; right: 30px; color: rgba(255,255,255,0.6); cursor: pointer; padding: 4px 8px; font-size: 16px; font-weight: bold;"
+                          style="color: rgba(255,255,255,0.6); cursor: pointer; padding: 4px; font-size: 18px; line-height: 1; flex-shrink: 0;"
                           title="Lijstje verwijderen">×</span>
                 </div>
             `).join('');
@@ -2286,14 +2286,14 @@ Current Project: ${data.currentProject || 'none'}
                 projectsList.innerHTML = data.projects.map(project => `
                     <div class="nav-item ${data.currentView === 'project' && data.currentProject === project.id ? 'active' : ''}" 
                          onclick="switchView('project', '${project.id}')"
-                         style="position: relative; padding-right: 40px;">
-                        <div class="nav-item-label">
+                         style="display: flex; align-items: center; gap: 8px;">
+                        <div class="nav-item-label" style="flex: 1; min-width: 0;">
                             <span class="nav-item-icon">📁</span>
-                            <span>${project.name}</span>
+                            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${project.name}</span>
                         </div>
                         <span class="nav-item-count">${data.tasks.filter(t => t.project == project.id && !t.completed).length}</span>
                         <span onclick="event.stopPropagation(); deleteProject('${project.id}')" 
-                              style="position: absolute; right: 30px; color: rgba(255,255,255,0.6); cursor: pointer; padding: 4px 8px; font-size: 16px; font-weight: bold;"
+                              style="color: rgba(255,255,255,0.6); cursor: pointer; padding: 4px; font-size: 18px; line-height: 1; flex-shrink: 0;"
                               title="Project verwijderen">×</span>
                     </div>
                 `).join('');
