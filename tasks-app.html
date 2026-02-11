@@ -1964,6 +1964,49 @@ Current Project: ${data.currentProject || 'none'}
             }
         }
 
+        // Delete project
+        async function deleteProject(projectId) {
+            if (!db) return;
+
+            const project = data.projects.find(p => p.id === projectId);
+            if (!project) return;
+
+            // Check if there are tasks in this project
+            const tasksInProject = data.tasks.filter(t => t.project === projectId);
+            
+            let confirmMessage = `Weet je zeker dat je project "${project.name}" wilt verwijderen?`;
+            if (tasksInProject.length > 0) {
+                confirmMessage += `\n\nDit project heeft ${tasksInProject.length} taken. Deze worden verplaatst naar Inbox.`;
+            }
+
+            if (!confirm(confirmMessage)) return;
+
+            try {
+                updateSyncStatus('syncing', 'Synchroniseren...');
+                
+                // Move tasks to inbox
+                if (tasksInProject.length > 0) {
+                    const batch = db.batch();
+                    tasksInProject.forEach(task => {
+                        const taskRef = db.collection('users').doc(userId).collection('tasks').doc(task.id);
+                        batch.update(taskRef, { project: '' });
+                    });
+                    await batch.commit();
+                }
+                
+                // Delete project
+                await db.collection('users').doc(userId).collection('projects').doc(projectId).delete();
+                
+                // If we're viewing this project, switch to inbox
+                if (data.currentView === 'project' && data.currentProject === projectId) {
+                    switchView('inbox');
+                }
+            } catch (error) {
+                console.error('Error deleting project:', error);
+                updateSyncStatus('error', 'Fout bij verwijderen');
+            }
+        }
+
         // List management
         function showAddListModal() {
             document.getElementById('list-modal').classList.add('active');
@@ -2009,14 +2052,40 @@ Current Project: ${data.currentProject || 'none'}
 
             listsContainer.innerHTML = data.lists.map(list => `
                 <div class="nav-item ${data.currentView === 'list' && data.currentList === list.id ? 'active' : ''}" 
-                     onclick="switchView('list', '${list.id}')">
+                     onclick="switchView('list', '${list.id}')"
+                     style="position: relative; padding-right: 40px;">
                     <div class="nav-item-label">
                         <span class="nav-item-icon">📝</span>
                         <span>${list.name}</span>
                     </div>
                     <span class="nav-item-count">${(list.items || []).filter(item => !item.checked).length}</span>
+                    <span onclick="event.stopPropagation(); deleteList('${list.id}')" 
+                          style="position: absolute; right: 30px; color: rgba(255,255,255,0.6); cursor: pointer; padding: 4px 8px; font-size: 16px; font-weight: bold;"
+                          title="Lijstje verwijderen">×</span>
                 </div>
             `).join('');
+        }
+
+        async function deleteList(listId) {
+            if (!db) return;
+
+            const list = data.lists.find(l => l.id === listId);
+            if (!list) return;
+
+            if (!confirm(`Weet je zeker dat je lijstje "${list.name}" wilt verwijderen?`)) return;
+
+            try {
+                updateSyncStatus('syncing', 'Synchroniseren...');
+                await db.collection('users').doc(userId).collection('lists').doc(listId).delete();
+                
+                // If we're viewing this list, switch to inbox
+                if (data.currentView === 'list' && data.currentList === listId) {
+                    switchView('inbox');
+                }
+            } catch (error) {
+                console.error('Error deleting list:', error);
+                updateSyncStatus('error', 'Fout bij verwijderen');
+            }
         }
 
         // List item functions
@@ -2216,12 +2285,16 @@ Current Project: ${data.currentProject || 'none'}
             } else {
                 projectsList.innerHTML = data.projects.map(project => `
                     <div class="nav-item ${data.currentView === 'project' && data.currentProject === project.id ? 'active' : ''}" 
-                         onclick="switchView('project', '${project.id}')">
+                         onclick="switchView('project', '${project.id}')"
+                         style="position: relative; padding-right: 40px;">
                         <div class="nav-item-label">
                             <span class="nav-item-icon">📁</span>
                             <span>${project.name}</span>
                         </div>
                         <span class="nav-item-count">${data.tasks.filter(t => t.project == project.id && !t.completed).length}</span>
+                        <span onclick="event.stopPropagation(); deleteProject('${project.id}')" 
+                              style="position: absolute; right: 30px; color: rgba(255,255,255,0.6); cursor: pointer; padding: 4px 8px; font-size: 16px; font-weight: bold;"
+                              title="Project verwijderen">×</span>
                     </div>
                 `).join('');
             }
