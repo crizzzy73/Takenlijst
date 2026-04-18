@@ -2129,6 +2129,9 @@ Current Project: ${data.currentProject || 'none'}
                 updateSyncStatus('syncing', 'Synchroniseren...');
                 await db.collection('users').doc(userId).collection('lists').doc(data.currentList)
                     .update({ items: list.items });
+                
+                // Re-render immediately to show updated state
+                renderTasks();
             } catch (error) {
                 console.error('Error toggling list item:', error);
                 updateSyncStatus('error', 'Fout bij bijwerken');
@@ -2147,6 +2150,9 @@ Current Project: ${data.currentProject || 'none'}
                 updateSyncStatus('syncing', 'Synchroniseren...');
                 await db.collection('users').doc(userId).collection('lists').doc(data.currentList)
                     .update({ items: list.items });
+                
+                // Re-render immediately to show updated state
+                renderTasks();
             } catch (error) {
                 console.error('Error deleting list item:', error);
                 updateSyncStatus('error', 'Fout bij verwijderen');
