@@ -2111,6 +2111,9 @@ Current Project: ${data.currentProject || 'none'}
                 await db.collection('users').doc(userId).collection('lists').doc(data.currentList)
                     .update({ items: items });
                 input.value = '';
+                
+                // Re-render immediately to show new item
+                renderTasks();
             } catch (error) {
                 console.error('Error adding list item:', error);
                 updateSyncStatus('error', 'Fout bij toevoegen');
