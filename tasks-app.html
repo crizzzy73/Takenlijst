@@ -862,7 +862,7 @@
             </div>
 
             <div class="tasks-container">
-                <div class="task-input-container">
+                <div class="task-input-container" id="task-input-container">
                     <input type="text" class="task-input" id="new-task-input" placeholder="Nieuwe taak..." onkeypress="handleTaskInputEnter(event)">
                     <div class="task-meta">
                         <select id="task-project">
@@ -2320,9 +2320,13 @@ Current Project: ${data.currentProject || 'none'}
 
         function renderTasks() {
             const tasksList = document.getElementById('tasks-list');
+            const taskInputContainer = document.getElementById('task-input-container');
             
             // If in list view, render list items instead of tasks
             if (data.currentView === 'list' && data.currentList) {
+                // Hide task input when in list view
+                if (taskInputContainer) taskInputContainer.style.display = 'none';
+                
                 const list = data.lists.find(l => l.id === data.currentList);
                 if (!list) {
                     tasksList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">❓</div><div>Lijstje niet gevonden</div></div>';
@@ -2405,6 +2409,9 @@ Current Project: ${data.currentProject || 'none'}
                 
                 return;
             }
+
+            // Show task input when NOT in list view
+            if (taskInputContainer) taskInputContainer.style.display = 'block';
 
             const tasks = getFilteredTasks();
 
