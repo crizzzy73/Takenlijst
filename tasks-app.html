@@ -2114,6 +2114,7 @@ Current Project: ${data.currentProject || 'none'}
                 
                 // Re-render immediately to show new item
                 renderTasks();
+                updateSyncStatus('synced', 'Gesynchroniseerd');
             } catch (error) {
                 console.error('Error adding list item:', error);
                 updateSyncStatus('error', 'Fout bij toevoegen');
@@ -2135,6 +2136,7 @@ Current Project: ${data.currentProject || 'none'}
                 
                 // Re-render immediately to show updated state
                 renderTasks();
+                updateSyncStatus('synced', 'Gesynchroniseerd');
             } catch (error) {
                 console.error('Error toggling list item:', error);
                 updateSyncStatus('error', 'Fout bij bijwerken');
@@ -2156,6 +2158,7 @@ Current Project: ${data.currentProject || 'none'}
                 
                 // Re-render immediately to show updated state
                 renderTasks();
+                updateSyncStatus('synced', 'Gesynchroniseerd');
             } catch (error) {
                 console.error('Error deleting list item:', error);
                 updateSyncStatus('error', 'Fout bij verwijderen');
