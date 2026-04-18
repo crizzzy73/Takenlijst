@@ -1,2 +1,2 @@
 # Takenlijst
-Spul voor mijn takenlijst
+Spul voor mijn takenlijst 
